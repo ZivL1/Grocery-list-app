@@ -46,5 +46,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!etName.getText().toString().trim().isEmpty())
+                {
+                    fsDAO.deleteDocument(etName.getText().toString());
+                }else{
+                    Toast.makeText(MainActivity.this, "אנא מלא שם", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

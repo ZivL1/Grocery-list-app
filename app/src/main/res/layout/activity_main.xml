@@ -32,6 +32,7 @@
         android:id="@+id/etAmount"
         android:layout_marginBottom="20dp"
         android:layout_width="150dp"
+        android:inputType="number"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/btnAdd"
         app:layout_constraintEnd_toEndOf="parent"

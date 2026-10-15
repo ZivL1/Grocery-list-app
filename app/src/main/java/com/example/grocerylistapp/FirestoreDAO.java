@@ -79,13 +79,29 @@ public class FirestoreDAO { //data access object
 
             });
         }
-    public void updateDocument(String docID, int newGrade)
+    public void updateDocument(String docID, int newAmount)
     {
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(docID);
-        docRef.update("grade",newGrade).addOnSuccessListener(new OnSuccessListener<Void>() {
+        docRef.update("amount",newAmount).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                Log.d("DAR_FIREBASE","new grade: " + newGrade);
+                Log.d("DAR_FIREBASE","new amount: " + newAmount);
+            }
+        });
+    }
+
+    public void deleteDocument(String docName){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(docName);
+
+        docRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d("DAR_FIREBASE","deleted: " + docName);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("DAR_FIREBASE", e.getMessage());
             }
         });
     }
