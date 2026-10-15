@@ -47,10 +47,12 @@ public class FirestoreDAO { //data access object
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Log.d("DAR_FIREBASE","SUCCESSFUL_READ");
                 Grocery grocery = documentSnapshot.toObject(Grocery.class);
-                Log.d("DAR_FIREBASE", ""+grocery);
+
 
                 ArrayList<Grocery> groceries = new ArrayList<>();
-                groceries.add(grocery);
+                if(grocery!=null) {
+                    groceries.add(grocery);
+                }
                 IFirestoreCallback.onDataReceived(groceries);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -69,12 +71,13 @@ public class FirestoreDAO { //data access object
             colRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    ArrayList<Grocery> students = new ArrayList<>();
+                    ArrayList<Grocery> groceries = new ArrayList<>();
                     for(DocumentSnapshot docSS : queryDocumentSnapshots.getDocuments()){
                         Grocery grocery = docSS.toObject(Grocery.class);
-                        students.add(grocery);
+                        groceries.add(grocery);
+                        Log.d("DAR_FIREBASE","grocery: " + grocery);
                     }
-                    IFirestoreCallback.onDataReceived(students);
+                    IFirestoreCallback.onDataReceived(groceries);
                 }
 
             });
