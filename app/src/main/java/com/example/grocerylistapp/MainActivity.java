@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!etAmount.getText().toString().trim().isEmpty()&&!etName.getText().toString().trim().isEmpty()) {
                     fsDAO.createDocument(etName.getText().toString(), Integer.parseInt(etAmount.getText().toString()));
                 }else{
-                    Toast.makeText(MainActivity.this, "אחד מהשדות לא מלא", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "לפחות אחד מהשדות לא מלא", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -55,6 +55,17 @@ public class MainActivity extends AppCompatActivity {
                     fsDAO.deleteDocument(etName.getText().toString());
                 }else{
                     Toast.makeText(MainActivity.this, "אנא מלא שם", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!etAmount.getText().toString().trim().isEmpty()&&!etName.getText().toString().trim().isEmpty()){
+                    fsDAO.updateDocument(etName.getText().toString(), Integer.parseInt(etAmount.getText().toString()));
+                }else{
+                    Toast.makeText(MainActivity.this, "לפחות אחד מהשדות לא מלא", Toast.LENGTH_SHORT).show();
                 }
             }
         });
