@@ -1,0 +1,58 @@
+package com.example.grocerylistapp;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class ImageDAO {
+    String COLLECTION_IMAGE_NAME = "image_labs";
+    public void saveToFirestore(
+            String id,
+            String type,
+            String data,
+            IFirestoreImageCallback<Void> iFirestoreImageCallback
+    ){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> item = new HashMap<>();
+        item.put("type",type);
+        item.put("data",data);
+
+        DocumentReference docRef = db.collection(COLLECTION_IMAGE_NAME).document(id);
+
+        docRef.set(item).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                iFirestoreImageCallback.onSuccess(null);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                iFirestoreImageCallback.onFailure(e);
+            }
+        });
+    }
+
+    public void readImg(String imgID, IFirestoreImageCallback iFirestoreImageCallback)
+    {
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(COLLECTION_IMAGE_NAME).document(imgID);
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                iFirestoreImageCallback.onSuccess(documentSnapshot.getString("data"));
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                iFirestoreImageCallback.onFailure(e);
+            }
+        });
+    }
+}

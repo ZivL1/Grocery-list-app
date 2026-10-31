@@ -24,11 +24,12 @@ public class FirestoreDAO { //data access object
     private static final String COLLECTION_NAME = "groceries";
     private ListenerRegistration listenerRegistration;
 
-    public void createDocument(String name, int amount)
+    public void createDocument(String name, int amount, String imgData)
     {
         Map<String, Object> groceryList = new HashMap<>();
         groceryList.put("name", name);
         groceryList.put("amount",amount);
+        groceryList.put("imgData", imgData);
 
         DocumentReference docRef = FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(name);
         docRef.set(groceryList).addOnSuccessListener(new OnSuccessListener<Void>() {

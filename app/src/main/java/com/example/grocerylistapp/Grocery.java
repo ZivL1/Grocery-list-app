@@ -4,6 +4,14 @@ public class Grocery {
     private String name, imgData;
     private  int amount;
 
+    public String getImgData() {
+        return imgData;
+    }
+
+    public void setImgData(String imgData) {
+        this.imgData = imgData;
+    }
+
     public int getAmount() {
         return amount;
     }
