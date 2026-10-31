@@ -2,13 +2,18 @@ package com.example.grocerylistapp;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -17,6 +22,7 @@ import java.util.Map;
 
 public class FirestoreDAO { //data access object
     private static final String COLLECTION_NAME = "groceries";
+    private ListenerRegistration listenerRegistration;
 
     public void createDocument(String name, int amount)
     {
@@ -108,4 +114,42 @@ public class FirestoreDAO { //data access object
             }
         });
     }
+
+    public void listenToDocumentChange(String name)
+    {
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document();
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(value!=null && value.exists()){
+                    Grocery grocery = value.toObject(Grocery.class);
+                    Log.d("CHANGED_DAO", grocery.toString());
+                }
+            }
+        });
+    }
+
+    public void listenToAllDocumentChange()
+    {
+        CollectionReference colRef = FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+            listenerRegistration = colRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if(error !=null ||value == null) return;
+                for(DocumentChange docC : value.getDocumentChanges()){
+                    Grocery grocery = docC.getDocument().toObject(Grocery.class);
+                    Log.d("CHANGED_DAO",docC.getType() + " :"  + grocery.toString());
+                }
+            }
+        });
+    }
+
+    public void stopListening(){
+        if(listenerRegistration!=null){
+            listenerRegistration.remove();
+            listenerRegistration=null;
+        }
+    }
+
+
 }

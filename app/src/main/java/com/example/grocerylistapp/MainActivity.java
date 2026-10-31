@@ -14,14 +14,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class    MainActivity extends AppCompatActivity {
 
     private Button btnAdd, btnDelete, btnUpdate, btnShow;
     private EditText etName, etAmount;
 
     private ListView groceryListView;
+
+    private  FirestoreDAO fsDAO = new FirestoreDAO();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         etAmount = findViewById(R.id.etAmount);
         groceryListView = findViewById(R.id.groceryListView);
 
-        FirestoreDAO fsDAO = new FirestoreDAO();
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,5 +125,17 @@ public class MainActivity extends AppCompatActivity {
                 etAmount.setText("");
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        fsDAO.listenToAllDocumentChange();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        fsDAO.stopListening();
     }
 }

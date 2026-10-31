@@ -1,7 +1,7 @@
 package com.example.grocerylistapp;
 
 public class Grocery {
-    private String name;
+    private String name, imgData;
     private  int amount;
 
     public int getAmount() {
