@@ -6,6 +6,13 @@
     android:id="@+id/view_db">
 
     <!-- Top Half: ListView -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="רשימת הקניות"
+        android:layout_marginLeft="150dp"
+        android:textSize="20dp"/>
+
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"

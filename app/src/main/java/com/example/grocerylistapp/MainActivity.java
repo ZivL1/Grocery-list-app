@@ -292,7 +292,7 @@ public class    MainActivity extends AppCompatActivity {
                     + " | קובץ מקורי: "
                     + formatBytes(originalBytes));
 
-            status("התמונה נבחרה. עכשיו אפשר לשמור באחת הדרכים.");
+            status("התמונה נבחרה");
 
         } catch (Exception e) {
             selectedUri = null;
