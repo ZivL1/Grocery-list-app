@@ -67,8 +67,13 @@ public class ViewDatabaseActivity extends AppCompatActivity {
                         }
                     });
                 }else{
-                    Toast.makeText(ViewDatabaseActivity.this, "אנא הכנס שם לפני החיפוש", Toast.LENGTH_SHORT).show();
-                }
+                    fsDAO.readAllDocuments(new IFirestoreCallback() {
+                        @Override
+                        public void onDataReceived(ArrayList<Grocery> groceries) {
+                            GroceryAdapter adapter = new GroceryAdapter(ViewDatabaseActivity.this,groceries);
+                            lv.setAdapter(adapter);
+                        }
+                    });                }
             }
         });
     }
