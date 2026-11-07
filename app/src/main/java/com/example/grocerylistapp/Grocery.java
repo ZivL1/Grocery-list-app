@@ -1,7 +1,7 @@
 package com.example.grocerylistapp;
 
 public class Grocery {
-    private String name, imgData;
+    private String name, imgData, whoAdded;
     private  int amount;
 
     public String getImgData() {
@@ -31,5 +31,13 @@ public class Grocery {
     @Override
     public String toString() {
         return name + ", amount: "+ amount;
+    }
+
+    public String getWhoAdded() {
+        return whoAdded;
+    }
+
+    public void setWhoAdded(String whoAdded) {
+        this.whoAdded = whoAdded;
     }
 }

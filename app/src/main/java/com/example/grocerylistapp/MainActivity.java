@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +34,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
@@ -45,8 +51,9 @@ public class    MainActivity extends AppCompatActivity {
 
     private Button btnAdd, btnDelete, btnUpdate, btnViewDB, btnAddImg;
     private EditText etName, etAmount;
-    private TextView tvStatus, tvStats;
-
+    private TextView tvStatus, tvStats, tvLogOut;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private ActivityResultLauncher<String[]> galleryLauncher;
     private ActivityResultLauncher<Uri> cameraLauncher;
     private  FirestoreDAO fsDAO = new FirestoreDAO();
@@ -56,6 +63,7 @@ public class    MainActivity extends AppCompatActivity {
     private ImageView ivPreview;
     private int originalWidth,originalHeight;
     private long originalBytes;
+    private String USER_COLLECTION = "users", name = "";
 
 
 
@@ -72,6 +80,7 @@ public class    MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         btnAdd = findViewById(R.id.btnAdd);
         btnDelete = findViewById(R.id.btnDelete);
         btnUpdate = findViewById(R.id.btnUpdate);
@@ -82,6 +91,30 @@ public class    MainActivity extends AppCompatActivity {
         tvStatus = findViewById(R.id.tvStatus);
         tvStats = findViewById(R.id.tvStats);
         ivPreview = findViewById(R.id.ivPreview);
+        tvLogOut = findViewById(R.id.tvLogOut);
+
+        checkRegister();
+
+
+        tvLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logOut();
+            }
+        });
+        db.collection(USER_COLLECTION).document(mAuth.getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()) {
+                    name = documentSnapshot.getString("fName");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("MAIN_ACTIVITY", e.toString());
+            }
+        });
 
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), new ActivityResultCallback<Uri>() {
             @Override
@@ -162,9 +195,11 @@ public class    MainActivity extends AppCompatActivity {
                             !etName.getText().toString().trim().isEmpty() &&
                             (ivPreview.getDrawable() != null && !sampleDrawable)) {
 
+
                         fsDAO.createDocument(
                                 etName.getText().toString(),
                                 Integer.parseInt(etAmount.getText().toString()),
+                                name,
                                 base64Img
                         );
 
@@ -214,6 +249,51 @@ public class    MainActivity extends AppCompatActivity {
 
 
     }
+
+    private void logOut() {
+        FirebaseAuth.getInstance().signOut();
+
+        Intent intent = new Intent(this, AuthActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+        Toast.makeText(this, "התנתקת בהצלחה",
+                Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void checkRegister() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser == null){
+            Intent intent = new Intent(MainActivity.this, AuthActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+        db.collection(USER_COLLECTION).document(currentUser.getUid()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        // If the document doesn't exist or 'fName' is missing, stage 2 is incomplete
+                        if (documentSnapshot.exists() && documentSnapshot.getString("fName") != null) {
+                            name = documentSnapshot.getString("fName");
+                        } else {
+                            // Redirect to Stage 2 registration
+                            startActivity(new Intent(MainActivity.this, NextAuthStepActivity.class));
+                            finish();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("MAIN_ACTIVITY", "Failed to fetch user profile", e);
+                        Toast.makeText(MainActivity.this, "שגיאה בטעינת הנתונים", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
     private Bitmap loadForCompression() throws IOException {
 

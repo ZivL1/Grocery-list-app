@@ -31,11 +31,13 @@ public class GroceryAdapter extends ArrayAdapter<Grocery> {
 
         TextView tvName = convertView.findViewById(R.id.tvGroceryName);
         TextView tvAmount = convertView.findViewById(R.id.tvGroceryAmount);
+        TextView tvWhoAdded = convertView.findViewById(R.id.tvGroceryWhoAdded);
         ImageView ivImage = convertView.findViewById(R.id.ivGroceryImage);
 
         if (grocery != null) {
             tvName.setText(grocery.getName());
             tvAmount.setText("כמות: " + grocery.getAmount());
+            tvWhoAdded.setText("נוסף על ידי: " + grocery.getWhoAdded());
 
             String base64Image = grocery.getImgData();
             if (base64Image != null && !base64Image.isEmpty()) {

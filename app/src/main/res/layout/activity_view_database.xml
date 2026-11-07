@@ -34,7 +34,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="הכנס שם"
+                android:hint="חפש לפי שם המוצר"
                 android:inputType="textPersonName"
                 android:layout_marginEnd="8dp" />
 
